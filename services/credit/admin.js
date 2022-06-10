@@ -1,7 +1,7 @@
 'use strict';
 
 const { uid } = require('../../helpers/uid');
-const { Profile } = require('../../models/profile');
+const { Credit } = require('../../models/credit');
 
 const all = async (params) => {
   try {
@@ -9,7 +9,7 @@ const all = async (params) => {
     const limit = params.limit ? parseInt(params.limit) : 100;
     const offset = (page * limit) - limit;
 
-    const profiles = await Profile.findAll({
+    const credits = await Credit.findAll({
       limit: limit,
       offset: offset,
       order: [
@@ -19,10 +19,10 @@ const all = async (params) => {
 
     return {
       metadata: { http_code: 200, page, limit },
-      data: profiles
+      data: credits
     };
   } catch (error) {
-    console.error('Error: Unable to execute all profile.admin => ', error);
+    console.error('Error: Unable to execute all credit.admin => ', error);
     
     return {
       metadata: { http_code: 500 },
@@ -33,13 +33,13 @@ const all = async (params) => {
 
 const create = async (params) => {
   try {
-    let profile = await Profile.findOne({
+    let credit = await Credit.findOne({
       where: {
         name: params.name,
       }
     });
 
-    if (profile) {
+    if (credit) {
       return {
         metadata: { http_code: 409 },
         error: { message: 'name_has_already_been_registered' },
@@ -47,29 +47,21 @@ const create = async (params) => {
     }
 
     const now = Date.now();
-    profile = await Profile.create({
+    credit = await Credit.create({
       id: uid(),      
       created_at: now,
       updated_at: now,
 
       user_id: params.user_id,
-      first_name: params.first_name,
-      last_name : params.last_name,
-      headline : params.headline,
-      biography: params.biography,
-      language: params.language,
-      website: params.website,
-      twitter: params.twitter,
-      facebook : params.facebook,
-      linkedin : params.linkedin,
+      credit: params.credit,
     });
 
     return {
       metadata: { http_code: 201 },
-      data: profile,
+      data: credit,
     };
   } catch (error) {
-    console.error('Error: Unable to execute create profile.admin ', error);
+    console.error('Error: Unable to execute create credit.admin ', error);
     
     return {
       metadata: { http_code: 500 },
@@ -80,13 +72,13 @@ const create = async (params) => {
 
 const show = async (id) => {
   try {
-    const profile = await Profile.findOne({
+    const credit = await Credit.findOne({
       where: {
         id,
       }
     });
 
-    if (!profile) {
+    if (!credit) {
       return {
         metadata: { http_code: 404 },
         error: { message: 'record_not_found' },
@@ -95,10 +87,10 @@ const show = async (id) => {
 
     return {
       metadata: { http_code: 200 },
-      data: profile
+      data: credit
     };
   } catch (error) {
-    console.error('Error: Unable to execute show profile.admin ', error);
+    console.error('Error: Unable to execute show credit.admin ', error);
     
     return {
       metadata: { http_code: 500 },
@@ -110,13 +102,13 @@ const show = async (id) => {
 const update = async (id, params) => {
   try {
     // data validation
-    let profile = await Profile.findOne({
+    let credit = await Credit.findOne({
       where: {
         id,
       }
     });
 
-    if (!profile) {
+    if (!credit) {
       return {
         metadata: { http_code: 404 },
         error: { message: 'record_not_found' },
@@ -133,47 +125,20 @@ const update = async (id, params) => {
       data['user_id'] = params['user_id'];
     }
 
-    if (params['first_name']) {
-      data['first_name'] = params['first_name'];
+    if (params['credit']) {
+      data['credit'] = params['credit'];
     }
 
-    if (params['last_name']) {
-      data['last_name'] = params['last_name'];
-    }
-
-    if (params['headline']) {
-      data['headline'] = params['headline'];
-    }
-
-    if (params['language']) {
-      data['language'] = params['language'];
-    }
-
-    if (params['website']) {
-      data['website'] = params['website'];
-    }
-
-    if (params['twitter']) {
-      data['twitter'] = params['twitter'];
-    }
-
-    if (params['facebook']) {
-      data['facebook'] = params['facebook'];
-    }
-
-    if (params['linkedin']) {
-      data['linkedin'] = params['linkedin'];
-    }
     // data preparation end
 
-    profile = await profile.update(data);
+    credit = await credit.update(data);
 
     return {
       metadata: { http_code: 200 },
-      data: profile
+      data: credit
     };
   } catch (error) {
-    console.error('Error: Unable to execute update profile.admin ', error);
+    console.error('Error: Unable to execute update credit.admin ', error);
     
     return {
       metadata: { http_code: 500 },
